@@ -6,7 +6,6 @@ A Docker-deployable application to interact with SpaceTraders.io API
 
 import os
 import requests
-import json
 import time
 from datetime import datetime
 
@@ -54,7 +53,11 @@ class SpaceTradersClient:
         response = requests.get(url, headers=self.headers)
         
         if response.status_code == 200:
-            data = response.json()['data']
+            result = response.json()
+            data = result.get('data')
+            if not data:
+                print(f"✗ Unexpected API response format")
+                return None
             print(f"\n=== Agent Information ===")
             print(f"Callsign: {data['symbol']}")
             print(f"Headquarters: {data['headquarters']}")
@@ -76,7 +79,8 @@ class SpaceTradersClient:
         response = requests.get(url, headers=self.headers)
         
         if response.status_code == 200:
-            ships = response.json()['data']
+            result = response.json()
+            ships = result.get('data', [])
             print(f"\n=== Ships ({len(ships)}) ===")
             for ship in ships:
                 print(f"  • {ship['symbol']} - {ship['registration']['role']}")
@@ -99,7 +103,8 @@ class SpaceTradersClient:
         response = requests.get(url, headers=self.headers)
         
         if response.status_code == 200:
-            contracts = response.json()['data']
+            result = response.json()
+            contracts = result.get('data', [])
             print(f"\n=== Contracts ({len(contracts)}) ===")
             for contract in contracts:
                 print(f"  • {contract['id']}")
@@ -120,7 +125,11 @@ class SpaceTradersClient:
         response = requests.get(url, headers=self.headers)
         
         if response.status_code == 200:
-            data = response.json()['data']
+            result = response.json()
+            data = result.get('data')
+            if not data:
+                print(f"✗ Unexpected API response format")
+                return None
             print(f"\n=== System: {system_symbol} ===")
             print(f"Type: {data['type']}")
             print(f"Coordinates: ({data['x']}, {data['y']})")
@@ -181,8 +190,10 @@ def main():
         
         # Get system info if headquarters is available
         if 'headquarters' in agent:
-            system_symbol = agent['headquarters'].split('-')[0]
-            client.get_system_info(system_symbol)
+            headquarters = agent['headquarters']
+            if '-' in headquarters:
+                system_symbol = headquarters.split('-')[0]
+                client.get_system_info(system_symbol)
     
     print("\n" + "=" * 60)
     print("Application completed successfully!")
