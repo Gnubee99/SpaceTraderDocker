@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  spacetraders:
+    build: .
+    image: spacetraders-app:latest
+    container_name: spacetraders-client
+    environment:
+      # Set your SpaceTraders API token here or in .env file
+      - SPACETRADERS_TOKEN=${SPACETRADERS_TOKEN:-}
+      # Set to 'true' to keep container running
+      - KEEP_ALIVE=${KEEP_ALIVE:-false}
+      # For new agent registration
+      - REGISTER_NEW_AGENT=${REGISTER_NEW_AGENT:-false}
+      - AGENT_CALLSIGN=${AGENT_CALLSIGN:-}
+      - AGENT_FACTION=${AGENT_FACTION:-COSMIC}
+    restart: unless-stopped
+    # Uncomment to view logs in real-time
+    # stdin_open: true
+    # tty: true
