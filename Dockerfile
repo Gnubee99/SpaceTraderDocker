@@ -8,13 +8,10 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install dependencies
-RUN pip install --no-cache-dir --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY main.py .
-
-# Make the script executable
-RUN chmod +x main.py
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
